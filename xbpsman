@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+
+# Quit is for the main menu. If Quit is 0, we will not exit the menu. When the user selects Quit,
+# This value is changed to 1 and we will exit the main menu.
+QUIT=0
+
+# Saves screen so we can return to the previous screen later.
+savescreen() {
+  printf '\e[?1049h'
+}
+
+# Restores previous screen
+restorescreen() {
+  printf '\e[?1049l'
+}
+
+alias
+
+mainmenu() {
+  clear
+  gum style --border "rounded" --padding "2" "xbpsman"
+  printf '\e[9;30r'
+  printf '\e[9H'
+  MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Remove installed packages" "Quit" --selected.border="rounded" --selected.background="4" --selected.foreground="16" --cursor="")
+  case $MAINCHOICE in
+    "Update all packages" )
+      sudo xbps-install -Syu
+      output=$(sudo xbps-install -Syu 2>&1)
+      
+      # Check for common error indicators in the output
+      if echo "$output" | grep -q "ERROR"; then
+        printf "An error occurred during the update.\nPress any key to continue"
+      else
+        printf "Packages updated\nPress any key to continue" 
+      fi
+      read -n1
+
+            ;;
+    "Search and add packages" )
+      INSTALLPKGS=$(xbps-query -Rs "" | gum filter --no-limit --no-fuzzy)
+      EXITERROR=$?
+      if [[ $EXITERROR -ne 0 ]]; then
+        printf "Exiting. Going back to main menu."
+        sleep 3
+      else    
+        INSTALLPKGS=$(echo "$INSTALLPKGS" | grep -oP '\b[a-zA-Z0-9_-]+-\d+(\.\d+)*(_\d+)?\b')
+        sudo xbps-install $INSTALLPKGS
+        EXITERROR=$?
+        if [[ $EXITERROR -eq 0 ]]; then
+          printf "Installation succeeded \nPress any key to continue"
+          read -n1
+          clear
+        else
+          printf "Installation incomplete or completed with erros \nPress any key to continue"
+          read -n1
+          clear
+        fi
+      fi
+    ;;
+    "Remove installed packages" )
+      RMPKGS=$(xbps-query -s "" | gum filter --no-limit --no-fuzzy)
+      EXITERROR=$?
+      if [[ $EXITERROR -ne 0 ]]; then
+        printf "Exiting. Going back to main menu."
+        sleep 3
+      else
+        RMPKGS=$(echo $RMPKGS |  grep -oP '\b[a-zA-Z0-9_-]+-\d+(\.\d+)*(_\d+)?\b')
+        sudo xbps-remove $RMPKGS
+        EXITERROR=$?
+        if [[ $EXITERROR -eq 0 ]]; then
+          printf "Packages removed \nPress any key to continue"
+          read -n1
+          clear
+        else printf "Package removal incomplete or completed with erros \nPress any key to continue"
+          read -n1
+          clear
+        fi
+      fi
+    ;;
+    "Quit" )
+      QUIT=1
+      ;;
+  esac
+      
+}
+
+savescreen
+while [[ $QUIT -eq 0 ]]; do
+  mainmenu
+done
+
+printf '\e[;r'
+restorescreen
