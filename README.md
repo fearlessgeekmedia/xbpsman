@@ -20,3 +20,7 @@ There will be more added to this in the future.
 3. `./install`
 4. Answer the prompts to install xbpsman, and if needed, gum.
 5. Now you can run `xbpsman`
+
+## To-Do
+* Add support for using different flags (such as --force)
+* Correct exiting the program so that the terminal characters don't get messed up
