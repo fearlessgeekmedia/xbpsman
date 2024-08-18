@@ -12,6 +12,7 @@ There will be more added to this in the future.
 
 * gum (can be installed with the installer for xbpsman)
 * go (only if you decide to install gum from the go repositories, which tends to be more up to date)
+* tput (Installer does not currently check for this, but it's included with most Linux distributions. It's in your repository if it's not included)
 
 ## Installation
 
@@ -20,6 +21,13 @@ There will be more added to this in the future.
 3. `./install`
 4. Answer the prompts to install xbpsman, and if needed, gum.
 5. Now you can run `xbpsman`
+
+## Changelog
+
+### v.0.15 - 08/17/2024
+* Made visual improvements
+* Fixed visual bugs that were happening
+* Using tput for a few things.
 
 ## To-Do
 * Add support for using different flags (such as --force)

@@ -18,12 +18,25 @@ alias
 
 mainmenu() {
   clear
-  gum style --border "rounded" --padding "2" "xbpsman"
-  printf '\e[9;30r'
-  printf '\e[9H'
-  MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Remove installed packages" "Quit" --selected.border="rounded" --selected.background="4" --selected.foreground="16" --cursor="")
+
+  COLS=$(tput cols)
+  COLS=$((COLS-2))
+  ROWS=$(tput lines)
+  ROWS=$((ROWS-10))
+  gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "xbpsman"
+  printf "\e[7;${ROWS}r"
+  tput cup 7 0 && tput ed
+  MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Remove installed packages" "Quit" --selected.background="4" --selected.foreground="16" --cursor="")
   case $MAINCHOICE in
     "Update all packages" )
+      clear
+      COLS=$(tput cols)
+      COLS=$((COLS-2))
+      ROWS=$(tput lines)
+      ROWS=$((ROWS-10))
+      gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Update all Packages"
+      printf "\e[7;${ROWS}r"
+      tput cup 7 0 && tput ed
       sudo xbps-install -Syu
       output=$(sudo xbps-install -Syu 2>&1)
       
@@ -37,12 +50,23 @@ mainmenu() {
 
             ;;
     "Search and add packages" )
-      INSTALLPKGS=$(xbps-query -Rs "" | gum filter --no-limit --no-fuzzy)
+      clear
+      COLS=$(tput cols)
+      COLS=$((COLS-2))
+      ROWS=$(tput lines)
+      ROWS=$((ROWS-8))
+      gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Search and Add Packages"
+      tput cup 7 0 && tput ed
+      INSTALLPKGS=$(xbps-query -Rs "" | gum filter --no-limit --no-fuzzy --height=$ROWS)
       EXITERROR=$?
       if [[ $EXITERROR -ne 0 ]]; then
+        printf "\e[7;${ROWS}r"
+        tput cup 7 0
         printf "Exiting. Going back to main menu."
         sleep 3
       else    
+        printf "\e[7;${ROWS}r"
+        tput cup 7 0
         INSTALLPKGS=$(echo "$INSTALLPKGS" | grep -oP '\b[a-zA-Z0-9_-]+-\d+(\.\d+)*(_\d+)?\b')
         sudo xbps-install $INSTALLPKGS
         EXITERROR=$?
@@ -58,12 +82,24 @@ mainmenu() {
       fi
     ;;
     "Remove installed packages" )
-      RMPKGS=$(xbps-query -s "" | gum filter --no-limit --no-fuzzy)
+      clear
+      COLS=$(tput cols)
+      COLS=$((COLS-2))
+      ROWS=$(tput lines)
+      ROWS=$((ROWS-8))
+      gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Remove installed packages"
+      printf "\e[7;${ROWS}r"
+      tput cup 7 0 && tput ed
+      RMPKGS=$(xbps-query -s "" | gum filter --no-limit --no-fuzzy --height="$ROWS")
       EXITERROR=$?
       if [[ $EXITERROR -ne 0 ]]; then
+        printf "\e[7;${ROWS}r"
+        tput cup 7 0
         printf "Exiting. Going back to main menu."
         sleep 3
       else
+        printf "\e[7;${ROWS}r"
+        tput cup 7 0
         RMPKGS=$(echo $RMPKGS |  grep -oP '\b[a-zA-Z0-9_-]+-\d+(\.\d+)*(_\d+)?\b')
         sudo xbps-remove $RMPKGS
         EXITERROR=$?
