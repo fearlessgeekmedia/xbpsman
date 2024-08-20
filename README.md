@@ -24,6 +24,9 @@ There will be more added to this in the future.
 
 ## Changelog
 
+### v.0.16 - 08/19/2024
+* Fixed a bug where in packages with a period in the name, it didn't get the whole filename.
+
 ### v.0.15 - 08/17/2024
 * Made visual improvements
 * Fixed visual bugs that were happening

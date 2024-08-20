@@ -3,6 +3,7 @@
 # Quit is for the main menu. If Quit is 0, we will not exit the menu. When the user selects Quit,
 # This value is changed to 1 and we will exit the main menu.
 QUIT=0
+XBPSMAN_VER=v0.16
 
 # Saves screen so we can return to the previous screen later.
 savescreen() {
@@ -23,7 +24,7 @@ mainmenu() {
   COLS=$((COLS-2))
   ROWS=$(tput lines)
   ROWS=$((ROWS-10))
-  gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "xbpsman"
+  gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "xbpsman $XBPSMAN_VER"
   printf "\e[7;${ROWS}r"
   tput cup 7 0 && tput ed
   MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Remove installed packages" "Quit" --selected.background="4" --selected.foreground="16" --cursor="")
@@ -50,6 +51,7 @@ mainmenu() {
 
             ;;
     "Search and add packages" )
+      # Search and add packages
       clear
       COLS=$(tput cols)
       COLS=$((COLS-2))
@@ -57,62 +59,74 @@ mainmenu() {
       ROWS=$((ROWS-8))
       gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Search and Add Packages"
       tput cup 7 0 && tput ed
-      INSTALLPKGS=$(xbps-query -Rs "" | gum filter --no-limit --no-fuzzy --height=$ROWS)
+      
+      # Corrected this line
+      INSTALLPKGS=$(xbps-query -Rs "" | gum filter --no-limit --no-fuzzy --height=$ROWS | awk '{print $2}')
+      
       EXITERROR=$?
       if [[ $EXITERROR -ne 0 ]]; then
-        printf "\e[7;${ROWS}r"
-        tput cup 7 0
-        printf "Exiting. Going back to main menu."
-        sleep 3
-      else    
-        printf "\e[7;${ROWS}r"
-        tput cup 7 0
-        INSTALLPKGS=$(echo "$INSTALLPKGS" | grep -oP '\b[a-zA-Z0-9_-]+-\d+(\.\d+)*(_\d+)?\b')
-        sudo xbps-install $INSTALLPKGS
-        EXITERROR=$?
-        if [[ $EXITERROR -eq 0 ]]; then
-          printf "Installation succeeded \nPress any key to continue"
-          read -n1
-          clear
-        else
-          printf "Installation incomplete or completed with erros \nPress any key to continue"
-          read -n1
-          clear
-        fi
+          printf "\\e[7;${ROWS}r"
+          tput cup 7 0
+          printf "Exiting. Going back to main menu."
+          sleep 3
+      else
+          printf "\\e[7;${ROWS}r"
+          tput cup 7 0
+          
+          # Directly use the selected package names
+          sudo xbps-install $INSTALLPKGS
+          
+          EXITERROR=$?
+          if [[ $EXITERROR -eq 0 ]]; then
+              printf "Installation succeeded \\nPress any key to continue"
+              read -n1
+              clear
+          else
+              printf "Installation incomplete or completed with errors \\nPress any key to continue"
+              read -n1
+              clear
+          fi
       fi
-    ;;
+      ;;
     "Remove installed packages" )
+      # Remove installed packages
       clear
       COLS=$(tput cols)
       COLS=$((COLS-2))
       ROWS=$(tput lines)
       ROWS=$((ROWS-8))
       gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Remove installed packages"
-      printf "\e[7;${ROWS}r"
+      printf "\\e[7;${ROWS}r"
       tput cup 7 0 && tput ed
-      RMPKGS=$(xbps-query -s "" | gum filter --no-limit --no-fuzzy --height="$ROWS")
+      
+      # Corrected this line
+      RMPKGS=$(xbps-query -s "" | gum filter --no-limit --no-fuzzy --height="$ROWS" | awk '{print $2}')
+      
       EXITERROR=$?
       if [[ $EXITERROR -ne 0 ]]; then
-        printf "\e[7;${ROWS}r"
-        tput cup 7 0
-        printf "Exiting. Going back to main menu."
-        sleep 3
+          printf "\\e[7;${ROWS}r"
+          tput cup 7 0
+          printf "Exiting. Going back to main menu."
+          sleep 3
       else
-        printf "\e[7;${ROWS}r"
-        tput cup 7 0
-        RMPKGS=$(echo $RMPKGS |  grep -oP '\b[a-zA-Z0-9_-]+-\d+(\.\d+)*(_\d+)?\b')
-        sudo xbps-remove $RMPKGS
-        EXITERROR=$?
-        if [[ $EXITERROR -eq 0 ]]; then
-          printf "Packages removed \nPress any key to continue"
-          read -n1
-          clear
-        else printf "Package removal incomplete or completed with erros \nPress any key to continue"
-          read -n1
-          clear
-        fi
+          printf "\\e[7;${ROWS}r"
+          tput cup 7 0
+          
+          # Directly use the selected package names
+          sudo xbps-remove $RMPKGS
+          
+          EXITERROR=$?
+          if [[ $EXITERROR -eq 0 ]]; then
+              printf "Packages removed \\nPress any key to continue"
+              read -n1
+              clear
+          else
+              printf "Package removal incomplete or completed with errors \\nPress any key to continue"
+              read -n1
+              clear
+          fi
       fi
-    ;;
+      ;;
     "Quit" )
       QUIT=1
       ;;
