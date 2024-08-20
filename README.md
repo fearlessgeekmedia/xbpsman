@@ -12,8 +12,7 @@ There will be more added to this in the future.
 
 * gum (can be installed with the installer for xbpsman)
 * go (only if you decide to install gum from the go repositories, which tends to be more up to date)
-* tput (Installer does not currently check for this, but it's included with most Linux distributions. It's in your repository if it's not included. Oh wait, you're running Void Linux anyway!)
-
+  
 ## Installation
 
 1. `git clone https://github.com/fearlessgeekmedia/xbpsman.git`
