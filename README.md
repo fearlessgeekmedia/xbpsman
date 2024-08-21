@@ -1,5 +1,5 @@
 # xbpsman
-
+![image](./xbpsman.gif)
 ## Purpose
 
 xbpsman is a terminal/cli front-end to xbps to make managing packages easier. It's a menu-driven bash script using gum. I may have pv as an optional dependency in the near future.
