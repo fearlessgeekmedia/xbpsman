@@ -3,7 +3,7 @@
 # Quit is for the main menu. If Quit is 0, we will not exit the menu. When the user selects Quit,
 # This value is changed to 1 and we will exit the main menu.
 QUIT=0
-XBPSMAN_VER=v0.16
+XBPSMAN_VER=v0.17
 
 # Saves screen so we can return to the previous screen later.
 savescreen() {
@@ -27,7 +27,7 @@ mainmenu() {
   gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "xbpsman $XBPSMAN_VER"
   printf "\e[7;${ROWS}r"
   tput cup 7 0 && tput ed
-  MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Remove installed packages" "Quit" --selected.background="4" --selected.foreground="16" --cursor="")
+  MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Remove installed packages" "Quit" --selected.background="4" --selected.foreground="16" --cursor="=> ")
   case $MAINCHOICE in
     "Update all packages" )
       clear

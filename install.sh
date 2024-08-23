@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+
+
+XBPSMAN_VER=v0.17
+
 # Function to check if a command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
@@ -150,7 +154,9 @@ printf "Hi there! xbpsman is a script I wrote to make it a little easier for you
 packages on Void Linux. While I certainly think one should learn how to use xbps-install,
 xbps-remove, xbps-query, and other xbps tools on Void Linux, I understand some people 
 might have issues with that. In the meantime while they learn, I feel this is a great
-alternative. ~ Michael Williams/Fearless Geek Media."
+alternative. ~ Michael Williams/Fearless Geek Media.\n\n"
+
+printf "This is xbpsman $XBPSMAN_VER \n\n"
 
 printf "Charm gum is a required package. So first, let's check to see if you have that
 installed on your system."

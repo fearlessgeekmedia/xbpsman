@@ -23,6 +23,9 @@ There will be more added to this in the future.
 
 ## Changelog
 
+### v.0.17 - tbd
+* Found the color on the menu doesn't change in Cool Retro Term, so I put `=>` in front of what is selected in case your terminal emulator doesn't show the selected item's background color.
+
 ### v.0.16 - 08/19/2024
 * Fixed a bug where in packages with a period in the name, it didn't get the whole filename.
 
@@ -36,3 +39,4 @@ There will be more added to this in the future.
 * Correct exiting the program so that the terminal characters don't get messed up
 * Add ability to add and remove repos
 * Add ability to install locally downloaded packages
+* Fix some glitches that happen in the terminal when searching through packages
