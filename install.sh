@@ -2,7 +2,7 @@
 
 
 
-XBPSMAN_VER=v0.17
+XBPSMAN_VER=v0.18
 
 # Function to check if a command exists
 command_exists() {
@@ -146,9 +146,12 @@ restorescreen() {
 
 savescreen
 
+ROWS=$(tput lines)
 cat xbpsman.txt
-printf '\e[8;30r'
-printf '\e[9H'
+printf "\e[8;${ROWS}r"
+printf "\e[9H"
+tput cup 10 0 && tput ed
+cat fgmlogo.txt
 
 printf "Hi there! xbpsman is a script I wrote to make it a little easier for you to manage
 packages on Void Linux. While I certainly think one should learn how to use xbps-install,

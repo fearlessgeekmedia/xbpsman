@@ -3,7 +3,7 @@
 # Quit is for the main menu. If Quit is 0, we will not exit the menu. When the user selects Quit,
 # This value is changed to 1 and we will exit the main menu.
 QUIT=0
-XBPSMAN_VER=v0.17
+XBPSMAN_VER=v0.18
 
 # Saves screen so we can return to the previous screen later.
 savescreen() {
@@ -14,8 +14,6 @@ savescreen() {
 restorescreen() {
   printf '\e[?1049l'
 }
-
-alias
 
 mainmenu() {
   clear
@@ -56,11 +54,11 @@ mainmenu() {
       COLS=$(tput cols)
       COLS=$((COLS-2))
       ROWS=$(tput lines)
-      ROWS=$((ROWS-8))
+      ROWS=$((ROWS-10))
+      printf "\\e[;r"
       gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Search and Add Packages"
-      tput cup 7 0 && tput ed
+      # tput cup 10 0 && tput ed
       
-      # Corrected this line
       INSTALLPKGS=$(xbps-query -Rs "" | gum filter --no-limit --no-fuzzy --height=$ROWS | awk '{print $2}')
       
       EXITERROR=$?
@@ -94,10 +92,10 @@ mainmenu() {
       COLS=$(tput cols)
       COLS=$((COLS-2))
       ROWS=$(tput lines)
-      ROWS=$((ROWS-8))
+      ROWS=$((ROWS-10))
+      printf "\\e[;r"
       gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Remove installed packages"
-      printf "\\e[7;${ROWS}r"
-      tput cup 7 0 && tput ed
+      # tput cup 10 0 && tput ed
       
       # Corrected this line
       RMPKGS=$(xbps-query -s "" | gum filter --no-limit --no-fuzzy --height="$ROWS" | awk '{print $2}')
