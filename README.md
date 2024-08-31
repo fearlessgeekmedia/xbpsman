@@ -23,6 +23,9 @@ There will be more added to this in the future.
 
 ## Changelog
 
+### v.0.18 - 08/30/2024
+* Fixed the glitchiness that would happen when searching through packages.
+
 ### v.0.17 - 08/23/2024
 * Found the color on the menu doesn't change in Cool Retro Term, so I put `=>` in front of what is selected in case your terminal emulator doesn't show the selected item's background color.
 
