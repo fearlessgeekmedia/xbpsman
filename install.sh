@@ -2,7 +2,7 @@
 
 
 
-XBPSMAN_VER=v0.18
+XBPSMAN_VER=v0.20
 
 # Function to check if a command exists
 command_exists() {
