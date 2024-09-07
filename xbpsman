@@ -1,9 +1,14 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # Quit is for the main menu. If Quit is 0, we will not exit the menu. When the user selects Quit,
 # This value is changed to 1 and we will exit the main menu.
 QUIT=0
-XBPSMAN_VER=v0.18
+XBPSMAN_VER=v0.2
+
+gumnotfound() {
+  printf "Error: gum not found.\n"
+  exit 1
+}
 
 # Saves screen so we can return to the previous screen later.
 savescreen() {
@@ -25,7 +30,7 @@ mainmenu() {
   gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "xbpsman $XBPSMAN_VER"
   printf "\e[7;${ROWS}r"
   tput cup 7 0 && tput ed
-  MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Remove installed packages" "Quit" --selected.background="4" --selected.foreground="16" --cursor="=> ")
+  MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Hold packages" "Remove installed packages" "Manage repositories" "About xbpsman" "Quit" --selected.background="4" --selected.foreground="16" --cursor="=> ")
   case $MAINCHOICE in
     "Update all packages" )
       clear
@@ -43,9 +48,9 @@ mainmenu() {
       if echo "$output" | grep -q "ERROR"; then
         printf "An error occurred during the update.\nPress any key to continue"
       else
-        printf "Packages updated\nPress any key to continue" 
+        printf "Packages updated\n" 
       fi
-      read -n1
+      gum confirm "" --affirmative "OK" --negative ""
 
             ;;
     "Search and add packages" )
@@ -76,12 +81,12 @@ mainmenu() {
           
           EXITERROR=$?
           if [[ $EXITERROR -eq 0 ]]; then
-              printf "Installation succeeded \\nPress any key to continue"
-              read -n1
+              printf "Installation succeeded"
+              gum confirm "" --affirmative "OK" --negative ""
               clear
           else
-              printf "Installation incomplete or completed with errors \\nPress any key to continue"
-              read -n1
+              printf "Installation incomplete or completed with errors."
+              gum confirm "" --affirmative "OK" --negative ""
               clear
           fi
       fi
@@ -116,14 +121,60 @@ mainmenu() {
           EXITERROR=$?
           if [[ $EXITERROR -eq 0 ]]; then
               printf "Packages removed \\nPress any key to continue"
-              read -n1
+              gum confirm "" --affirmative "OK" --negative ""
               clear
           else
               printf "Package removal incomplete or completed with errors \\nPress any key to continue"
-              read -n1
+              gum confirm "" --affirmative "OK" --negative ""
               clear
           fi
       fi
+      ;;
+    "About xbpsman")
+      
+      clear
+      COLS=$(tput cols)
+      COLS=$((COLS-2))
+      ROWS=$(tput lines)
+      ROWS=$((ROWS-10))
+      printf "\\e[;r"
+      gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "About xbpsman"
+      tput cup 10 0 && tput ed
+      printf "xbpsman vesion: $XBPSMAN_VER\n"
+
+      printf '%*s' "$COLS" '' | tr ' ' '='
+      
+      printf "\n\n"
+      printf "TUI frontend for xbps on Void Linux\n"
+      printf "For more information, visit https://fearlessgeekmedia.com/projects/xbpsman\n\n"
+      printf "To support this and other Fearless Geek Media projects, visit\n"
+      printf "https://fearlessgeekmedia.com/support\n\n"
+      
+      printf '%*s' "$COLS" '' | tr ' ' '-'
+      
+      printf "\n\n"
+      printf "Copyright (c) 2024 Fearless Geek Media\n\n"
+
+      printf "Permission is hereby granted, free of charge, to any person obtaining a copy"
+      printf "of this software and associated documentation files (the \"Software\"), to deal"
+      printf "in the Software without restriction, including without limitation the rights"
+      printf "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell"
+      printf "copies of the Software, and to permit persons to whom the Software is"
+      printf "furnished to do so, subject to the following conditions:\n\n"
+      printf ""
+      printf "The above copyright notice and this permission notice shall be included in all"
+      printf "copies or substantial portions of the Software.\n\n"
+      printf ""
+      printf "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR"
+      printf "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,"
+      printf "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE"
+      printf "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER"
+      printf "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,"
+      printf "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE"
+      printf "SOFTWARE.\n\n"
+
+      gum confirm "" --affirmative "OK" --negative ""
+
       ;;
     "Quit" )
       QUIT=1
@@ -131,6 +182,8 @@ mainmenu() {
   esac
       
 }
+
+which gum &> /dev/null || gumnotfound
 
 savescreen
 while [[ $QUIT -eq 0 ]]; do
