@@ -30,7 +30,7 @@ mainmenu() {
   gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "xbpsman $XBPSMAN_VER"
   printf "\e[7;${ROWS}r"
   tput cup 7 0 && tput ed
-  MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Hold packages" "Remove installed packages" "Manage repositories" "About xbpsman" "Quit" --selected.background="4" --selected.foreground="16" --cursor="=> ")
+  MAINCHOICE=$(gum choose "Update all packages" "Search and add packages" "Hold packages" "Unhold packages" "Remove installed packages" "Manage repositories" "About xbpsman" "Quit" --selected.background="4" --selected.foreground="16" --cursor="=> ")
   case $MAINCHOICE in
     "Update all packages" )
       clear
@@ -81,14 +81,78 @@ mainmenu() {
           
           EXITERROR=$?
           if [[ $EXITERROR -eq 0 ]]; then
-              printf "Installation succeeded"
-              gum confirm "" --affirmative "OK" --negative ""
+              gum confirm "Installation succeeded" --affirmative "OK" --negative ""
               clear
           else
-              printf "Installation incomplete or completed with errors."
-              gum confirm "" --affirmative "OK" --negative ""
+              gum confirm "Installation incomplete or completed with errors." --affirmative "OK" --negative ""
               clear
           fi
+      fi
+      ;;
+    "Hold packages" )
+      clear
+      COLS=$(tput cols)
+      COLS=$((COLS-2))
+      ROWS=$(tput lines)
+      ROWS=$((ROWS-10))
+      printf "\\e[;r"
+      gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Search and Add Packages"
+      # tput cup 10 0 && tput ed
+
+      HOLDPKGS=$(xbps-query -s "" | gum filter --no-limit --no-fuzzy --height="$ROWS" | awk '{print $2}')
+      EXITERROR=$?
+      if [[ $EXITERROR -ne 0 ]]; then
+        printf "\\e[7;${ROWS}r"
+        tput cup 7 0
+        printf "Exiting. Going back to main menu."
+        sleep 3
+      else
+        printf "\\e[7;${ROWS}r"
+        tput cup 7 0
+
+        sudo xbps-pkgdb -m hold $HOLDPKGS
+
+        EXITERROR=$?
+        if [[ $EXITERROR -eq 0 ]]; then
+          gum confirm "Packages held, and will not be updated." --affirmative "OK" --negative ""
+          clear
+        else
+          gum confirm ="Package holding errors. Cannot hold package." --afirmative "OK" --negative ""
+          clear
+        fi
+      fi
+      ;;
+    "Unhold packages" )
+      clear
+      COLS=$(tput cols)
+      COLS=$((COLS-2))
+      ROWS=$(tput lines)
+      ROWS=$((ROWS-10))
+      printf "\\e[;r"
+      gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Search and Add Packages"
+      # tput cup 10 0 && tput ed
+
+      UNHOLDPKGS=$(xbps-query -H | gum filter --no-limit --no-fuzzy --height="$ROWS")
+      EXITERROR=$?
+      if [[ $EXITERROR -ne 0 ]]; then
+        printf "\\e[7;${ROWS}r"
+        tput cup 7 0
+        printf "Exiting. Going back to main menu."
+        sleep 3
+      else
+        printf "\\e[7;${ROWS}r"
+        tput cup 7 0
+
+        echo $UNHOLDPKGS
+        sudo xbps-pkgdb -m unhold $UNHOLDPKGS
+        EXITERROR=$?
+        if [[ $EXITERROR -eq 0 ]]; then
+          gum confirm "Packages unheld. They will be updated again" --affirmative "OK" --negative ""
+          clear
+        else
+          gum confirm "Package unholding errors. Cannot unhold package." --afirmative "OK" --negative ""
+          clear
+        fi
       fi
       ;;
     "Remove installed packages" )
@@ -100,7 +164,7 @@ mainmenu() {
       ROWS=$((ROWS-10))
       printf "\\e[;r"
       gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Remove installed packages"
-      # tput cup 10 0 && tput ed
+      tput cup 10 0 && tput ed
       
       # Corrected this line
       RMPKGS=$(xbps-query -s "" | gum filter --no-limit --no-fuzzy --height="$ROWS" | awk '{print $2}')
@@ -120,12 +184,10 @@ mainmenu() {
           
           EXITERROR=$?
           if [[ $EXITERROR -eq 0 ]]; then
-              printf "Packages removed \\nPress any key to continue"
-              gum confirm "" --affirmative "OK" --negative ""
+              gum confirm "Packages removed" --affirmative "OK" --negative ""
               clear
           else
-              printf "Package removal incomplete or completed with errors \\nPress any key to continue"
-              gum confirm "" --affirmative "OK" --negative ""
+              gum confirm "Package removal incomplete or completed with errors." --affirmative "OK" --negative ""
               clear
           fi
       fi
