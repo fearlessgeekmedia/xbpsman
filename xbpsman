@@ -3,7 +3,16 @@
 # Quit is for the main menu. If Quit is 0, we will not exit the menu. When the user selects Quit,
 # This value is changed to 1 and we will exit the main menu.
 QUIT=0
-XBPSMAN_VER=v0.18
+XBPSMAN_VER=v0.19
+
+if command -v doas > /dev/null 2>&1; then
+  PRIV=doas
+elif command -v sudo > /dev/null 2>&1; then
+  PRIV=sudo
+else
+  printf "No privilege escalation tool found (doas or sudo required)\n" >&2
+  exit 1
+fi
 
 # Saves screen so we can return to the previous screen later.
 savescreen() {
@@ -36,8 +45,7 @@ mainmenu() {
       gum style --border "rounded" --padding "1" --width="$COLS" --align="center" "Update all Packages"
       printf "\e[7;${ROWS}r"
       tput cup 7 0 && tput ed
-      sudo xbps-install -Syu
-      output=$(sudo xbps-install -Syu 2>&1)
+      output=$($PRIV xbps-install -Syu 2>&1)
       
       # Check for common error indicators in the output
       if echo "$output" | grep -q "ERROR"; then
@@ -72,7 +80,7 @@ mainmenu() {
           tput cup 7 0
           
           # Directly use the selected package names
-          sudo xbps-install $INSTALLPKGS
+          $PRIV xbps-install $INSTALLPKGS
           
           EXITERROR=$?
           if [[ $EXITERROR -eq 0 ]]; then
@@ -111,7 +119,7 @@ mainmenu() {
           tput cup 7 0
           
           # Directly use the selected package names
-          sudo xbps-remove $RMPKGS
+          $PRIV xbps-remove $RMPKGS
           
           EXITERROR=$?
           if [[ $EXITERROR -eq 0 ]]; then

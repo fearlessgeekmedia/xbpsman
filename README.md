@@ -17,11 +17,14 @@ There will be more added to this in the future.
 
 1. `git clone https://github.com/fearlessgeekmedia/xbpsman.git`
 2. `cd xbpsman`
-3. `./install`
+3. `./install.sh`
 4. Answer the prompts to install xbpsman, and if needed, gum.
 5. Now you can run `xbpsman`
 
 ## Changelog
+
+### v.0.19 - 03/08/2026
+* detects between sudo and doas, especially because I now use doas on my Void Linux system.
 
 ### v.0.18 - 08/30/2024
 * Fixed the glitchiness that would happen when searching through packages.

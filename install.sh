@@ -2,7 +2,16 @@
 
 
 
-XBPSMAN_VER=v0.18
+XBPSMAN_VER=v0.19
+
+if command -v doas > /dev/null 2>&1; then
+  PRIV=doas
+elif command -v sudo > /dev/null 2>&1; then
+  PRIV=sudo
+else
+  printf "No privilege escalation tool found (doas or sudo required)\n" >&2
+  exit 1
+fi
 
 # Function to check if a command exists
 command_exists() {
@@ -13,7 +22,7 @@ command_exists() {
 install_go_xbps() {
     if command_exists xbps-install; then
         echo "Installing go using xbps-install..."
-        sudo xbps-install -S go
+        $PRIV xbps-install -S go
         echo "go installed successfully."
     else
         echo "xbps-install is not available. Please install go manually."
@@ -58,7 +67,7 @@ install_gum_go() {
 install_gum_xbps() {
     if command_exists xbps-install; then
         echo "Installing gum using xbps-install..."
-        sudo xbps-install -S gum
+        $PRIV xbps-install -S gum
         echo "gum installed successfully."
     else
         echo "xbps-install is not available. Please install gum manually."
@@ -205,8 +214,8 @@ xbpsman_script_path="$(dirname "$(realpath "$0")")/xbpsman"
 # Copy the xbpsman script to the chosen location
 if [ "$install_location" = "/usr/local/bin" ]; then
     echo "Installing xbpsman to $install_location..."
-    sudo cp "$xbpsman_script_path" "$install_location/xbpsman"
-    sudo chmod +x "$install_location/xbpsman"
+    $PRIV cp "$xbpsman_script_path" "$install_location/xbpsman"
+    $PRIV chmod +x "$install_location/xbpsman"
 else
     echo "Installing xbpsman to $install_location..."
     cp "$xbpsman_script_path" "$install_location/xbpsman"
